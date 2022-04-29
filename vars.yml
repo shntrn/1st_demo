@@ -1,0 +1,17 @@
+---
+db_name: bucardo
+db_user: bucardo
+db_password: bucardopassword
+sync_database: gogsdb
+sync_db_user: gogsuser
+sync_db_user_pass: gogspassword
+
+
+bucardo_download_link: https://bucardo.org/downloads/Bucardo-5.6.0.tar.gz
+destination_pgpass: /home/shntrn/1st_demo/files/.pgpass
+home_dest: /home/vagrant
+
+
+ip_sql_range:
+  - "192.168.56.111/32"
+  - "192.168.56.112/32"

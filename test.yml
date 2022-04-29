@@ -1,0 +1,19 @@
+- name: SQL Install
+  hosts: sql-node2
+  become: yes # optional parameter for running playbook with SU rights
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: restart postgres
+      service:
+        name: postgresql
+        state: restarted
+
+    - name: Install Bucardo 6) Install bucardo
+      expect:
+        command: '/usr/local/bin/bucardo install'
+        responses:
+          'Enter a number to change it, P to proceed, or Q to quit:': 'P'
+
