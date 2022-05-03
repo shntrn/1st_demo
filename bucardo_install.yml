@@ -8,8 +8,6 @@
     #Installing general packages
 
 
-
-
     - name: Install Epel Release & Python psycopg2
       yum:
         pkg: "{{ item }}"
@@ -78,8 +76,8 @@
     - name: Create db user
       postgresql_user:
         state: present
-        name: "{{ db_user }}"
-        password: "{{ db_password }}"
+        name: "{{ sync_db_user }}"
+        password: "{{ sync_db_user_pass }}"
       become: yes
       become_user: postgres
 
@@ -154,21 +152,21 @@
     - name: Install Bucardo 5) Copy credential file
       copy:
         src: "{{ destination_pgpass }}"
-        dest: "{{ home_dest }}"
+        dest: "{{ home_pgpass_dest }}"
         mode: 0600
 
     #Export credentials
     - name: replace host
-      replace: path={{ home_dest }}/.pgpass regexp=host replace={{ ansible_host }}
+      replace: path={{ home_pgpass_dest }}/.pgpass regexp=host replace={{ ansible_host }}
 
     - name: replace dbuser
       replace: path={{ home_dest }}/.pgpass regexp=user replace={{ db_user }}
 
     - name: replace database
-      replace: path={{ home_dest }}/.pgpass regexp=database replace={{ db_name }}
+      replace: path={{ home_pgpass_dest }}/.pgpass regexp=database replace={{ db_name }}
 
     - name: replace dbpassword
-      replace: path={{ home_dest }}/.pgpass regexp=password replace={{ db_password }}
+      replace: path={{ home_pgpass_dest }}/.pgpass regexp=password replace={{ db_password }}
 
     - name: Install Bucardo 6) Install bucardo
       expect:

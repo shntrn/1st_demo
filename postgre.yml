@@ -41,7 +41,7 @@
       lineinfile:
         path: /var/lib/pgsql/data/postgresql.conf
         regexp: 'listen_addresses'
-        line: listen_addresses='{{ ansible_host }}'
+        line: listen_addresses='127.0.0.1, {{ ansible_host }}'
       notify: restart postgres
 
     #Open port in firewalld

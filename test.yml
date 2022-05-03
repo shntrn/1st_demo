@@ -1,19 +1,10 @@
 - name: SQL Install
-  hosts: sql-node2
+  hosts: sql-node1
   become: yes # optional parameter for running playbook with SU rights
 
   vars_files:
     - vars.yml
 
   tasks:
-    - name: restart postgres
-      service:
-        name: postgresql
-        state: restarted
-
-    - name: Install Bucardo 6) Install bucardo
-      expect:
-        command: '/usr/local/bin/bucardo install'
-        responses:
-          'Enter a number to change it, P to proceed, or Q to quit:': 'P'
-
+    - name: app install with Python Selenium
+      script: app_install_py/app_install.py
