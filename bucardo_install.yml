@@ -8,14 +8,16 @@
     #Installing general packages
 
 
+
+
     - name: Install Epel Release & Python psycopg2
       yum:
         pkg: "{{ item }}"
         state: latest
       loop:
-       - epel-release
-       - python3-psycopg2
-       - python3-pexpect
+        - epel-release
+        - python3-psycopg2
+        - python3-pexpect
 
     #Install Postgre libraries
     - name: postgres perl library
@@ -45,8 +47,8 @@
     - name: add locale
       shell: "{{ item }}"
       loop:
-       - export LC_CTYPE=en_US.UTF-8
-       - export LC_ALL=en_US.UTF-8
+        - export LC_CTYPE=en_US.UTF-8
+        - export LC_ALL=en_US.UTF-8
 
     #Making dir for Bucardo
     - name: making dir for bucardo run
@@ -76,8 +78,8 @@
     - name: Create db user
       postgresql_user:
         state: present
-        name: "{{ sync_db_user }}"
-        password: "{{ sync_db_user_pass }}"
+        name: "{{ db_user }}"
+        password: "{{ db_password }}"
       become: yes
       become_user: postgres
 
@@ -104,11 +106,12 @@
       postgresql_pg_hba:
         dest: "/var/lib/pgsql/data/pg_hba.conf"
         contype: host
-        address: "{{ ansible_host }}"
+        address: "{{ hostvars[item]['ansible_host'] }}"
         databases: all
         method: md5
         users: "{{ db_user }}"
         create: true
+      with_items: "{{ ansible_play_hosts }}"
       become: yes
       become_user: postgres
       notify: restart postgres
@@ -157,10 +160,10 @@
 
     #Export credentials
     - name: replace host
-      replace: path={{ home_pgpass_dest }}/.pgpass regexp=host replace={{ ansible_host }}
+      replace: path={{ home_pgpass_dest}}/.pgpass regexp=host replace={{ ansible_host }}
 
     - name: replace dbuser
-      replace: path={{ home_dest }}/.pgpass regexp=user replace={{ db_user }}
+      replace: path={{ home_pgpass_dest }}/.pgpass regexp=user replace={{ db_user }}
 
     - name: replace database
       replace: path={{ home_pgpass_dest }}/.pgpass regexp=database replace={{ db_name }}
@@ -179,8 +182,3 @@
       service:
         name: postgresql
         state: restarted
-
-
-
-
-

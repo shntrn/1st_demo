@@ -1,0 +1,13 @@
+- name: Bucardo sync
+  host: sql_servers
+  become: yes
+
+  var_files:
+    - vars.yml
+
+
+  tasks:
+    - name: Bucardo add db
+      shell: "bucardo add"
+
+

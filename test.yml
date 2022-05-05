@@ -1,10 +1,71 @@
-- name: SQL Install
-  hosts: sql-node1
-  become: yes # optional parameter for running playbook with SU rights
-
+- name: Bucardo Multi-master set up
+  hosts: sql_servers
+  become: yes
   vars_files:
     - vars.yml
 
   tasks:
-    - name: app install with Python Selenium
-      script: app_install_py/app_install.py
+
+  - name: Allow md5 connection for the bucardo user in all hosts
+    postgresql_pg_hba:
+      dest: "/var/lib/pgsql/data/pg_hba.conf"
+      contype: host
+      address: 192.168.56.1
+      databases: all
+      method: md5
+      users: "{{ sync_db_user }}"
+      create: true
+    with_items: "{{ ansible_play_hosts }}"
+    become: yes
+    become_user: postgres
+
+  - name: restart postgres
+    service:
+      name: postgresql
+      state: restarted
+
+
+
+
+
+
+
+
+
+
+#  tasks:
+#    - name: Allow md5 connection for the bucardo user in all hosts
+#      postgresql_pg_hba:
+#        dest: "/var/lib/pgsql/data/pg_hba.conf"
+#        contype: host
+#        address: "{{ hostvars[item]['ansible_host'] }}"
+#        databases: all
+#        method: md5
+#        users: "{{ db_user }}"
+#        create: true
+#      with_items: "{{ ansible_play_hosts }}"
+#      become: yes
+#      become_user: postgres
+#
+#    #notife in prev statement doesn't work, test if you have time
+#    - name: restart postgres
+#      service:
+#        name: postgresql
+#        state: restarted
+
+
+#  tasks:
+#    - name: ip
+#      debug:
+#        msg: "{{ hostvars[groups['sql_servers']['ansible_host'] }}"
+#      loop: "{{ range ( }}"
+#
+#    - name: all ip group
+#      ansible.builtin.debug:
+#        msg: "{{ hostvars[item]['ansible_host'] }}"
+#      with_items: "{{ ansible_play_hosts }}"
+#
+#    - name: with_sequence
+#      ansible.builtin.debug:
+#        msg: "{{ hostvars[item]['ansible_host'] }}"
+#      with_items: "{{ groups['sql_servers'] }}"
