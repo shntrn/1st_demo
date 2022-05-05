@@ -1,0 +1,11 @@
+---
+
+# vars file for init_app_db
+
+#Sync DB variables (We use Gogs)
+sync_database: gogsdb
+sync_db_user: gogsuser
+sync_db_user_pass: gogspassword
+
+#Database back up for DB init
+db_backup: gogsdb

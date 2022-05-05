@@ -1,1 +1,9 @@
 ---
+- name: Install Postgres, Init App Db, Bucardo multi-master Sync, Balancer
+  hosts: all
+  become: yes
+
+  roles:
+    #- postgres_install
+    #- init_app_db
+    - bucardo

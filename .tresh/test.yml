@@ -1,10 +1,11 @@
 - name: Bucardo Multi-master set up
-  hosts: sql_servers
+  hosts: all
   become: yes
   vars_files:
     - vars.yml
 
   tasks:
+
 
   - name: Allow md5 connection for the bucardo user in all hosts
     postgresql_pg_hba:

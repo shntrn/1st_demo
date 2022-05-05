@@ -1,0 +1,50 @@
+---
+# tasks file for postgres_install
+
+
+#Installing postgre packages
+- name: Install postgres packages
+  yum:
+    pkg: "{{ item }}"
+    state: latest
+  loop:
+    - postgresql-server
+    - postgresql
+
+#Initialize postgres sql
+- name: Find out if PostgreSQL is already initialized
+  stat:
+    path: "/var/lib/pgsql/data/pg_hba.conf"
+  register: postgres_data
+
+- name: Initialize PostgreSQL
+  shell: "postgresql-setup initdb"
+  when: not postgres_data.stat.exists
+
+- name: Start and enabled postgres
+  service:
+    name: postgresql
+    state: started
+    enabled:
+
+- name: Add listen address - local & ansible host IP
+  lineinfile:
+    path: /var/lib/pgsql/data/postgresql.conf
+    regexp: 'listen_addresses'
+    line: listen_addresses='127.0.0.1, {{ ansible_host }}'
+  notify: restart postgres
+
+#Open port in firewalld
+- name: enable firewall
+  service:
+    name: firewalld
+    state: started
+    enabled:
+
+- name: Permit traffic to Postgre
+  firewalld:
+    port: 5432/tcp
+    permanent: yes
+    state: enabled
+  notify: restart firewalld
+

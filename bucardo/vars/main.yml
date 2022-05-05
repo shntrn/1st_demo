@@ -1,0 +1,15 @@
+---
+# vars file for bucardo
+
+#Bucardo install veriables
+db_name: bucardo
+db_user: bucardo
+db_password: bucardopassword
+bucardo_download_link: https://bucardo.org/downloads/Bucardo-5.6.0.tar.gz
+destination_pgpass: .pgpass
+home_pgpass_dest: /root/
+sync_database: gogsdb
+
+
+ip_node1: "{{ hostvars[ansible_play_hosts[0]]['ansible_host'] }}"
+ip_node2: "{{ hostvars[ansible_play_hosts[1]]['ansible_host'] }}"

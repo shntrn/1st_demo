@@ -1,0 +1,6 @@
+---
+# tasks file for bucardo
+
+- include_tasks: bucardo_install.yml
+
+- include_tasks: bucardo_syncdb.yml

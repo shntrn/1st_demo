@@ -1,0 +1,67 @@
+---
+# tasks file for init_app_db
+
+#Installing general packages
+
+- name: Install Epel Release & Python psycopg2
+  yum:
+    pkg: "{{ item }}"
+    state: latest
+  loop:
+    - epel-release
+    - python3-psycopg2
+    - python3-pexpect
+
+#Create app db
+- name: Create app database
+  postgresql_db:
+    state: present
+    name: "{{ sync_database }}"
+  become: yes
+  become_user: postgres
+
+- name: Create db user
+  postgresql_user:
+    state: present
+    name: "{{ sync_db_user }}"
+    password: "{{ sync_db_user_pass }}"
+  become: yes
+  become_user: postgres
+
+- name: "Grant db user access to app db"
+  postgresql_privs:
+    type: database
+    database: "{{ sync_database }}"
+    roles: "{{ sync_db_user }}"
+    grant_option: no
+    privs: all
+  become: yes
+  become_user: postgres
+
+- name: Allow md5 connection to app BD for app user
+  postgresql_pg_hba:
+    dest: "/var/lib/pgsql/data/pg_hba.conf"
+    contype: host
+    address: 127.0.0.1/32
+    databases: "{{ sync_database }}"
+    users: "{{ sync_db_user }}"
+    method: md5
+    create: true
+  become: yes
+  become_user: postgres
+  notify: restart postgres
+
+
+  #Copy DB backup so server
+- name: copy app database to server
+  copy:
+    src: "{{ db_backup }}"
+    dest: /tmp/
+
+- name: restore App Database
+  postgresql_db:
+    name: "{{ sync_database }}"
+    state: restore
+    target: /tmp/gogsdb
+  become: yes
+  become_user: postgres

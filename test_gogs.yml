@@ -2,7 +2,7 @@
   hosts: sql_servers
   become: yes
   vars_files:
-    - vars.yml
+    - .tresh/vars.yml
 
   tasks:
 
