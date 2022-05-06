@@ -4,6 +4,6 @@
   become: yes
 
   roles:
-    #- postgres_install
-    #- init_app_db
+    - postgres_install
+    - init_app_db
     - bucardo
