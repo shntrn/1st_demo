@@ -1,11 +1,5 @@
 ---
 
-- name: check if 5432 is open
-  tasks:
-    - wait_for: host=remote.host port=8080 timeout=1
-    - debug: msg=ok
-
-
 - name: restart firewall
   service:
     name: firewalld
