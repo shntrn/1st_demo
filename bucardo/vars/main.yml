@@ -11,5 +11,5 @@ home_pgpass_dest: /root/
 sync_database: gogsdb
 
 
-ip_node1: "{{ hostvars[ansible_play_hosts[0]]['ansible_host'] }}"
-ip_node2: "{{ hostvars[ansible_play_hosts[1]]['ansible_host'] }}"
+ip_node1: "{{ hostvars[groups['sql_servers'][0]]['ansible_host'] }}"
+ip_node2: "{{ hostvars[groups['sql_servers'][1]]['ansible_host'] }}"

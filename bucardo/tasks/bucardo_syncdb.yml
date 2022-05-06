@@ -1,15 +1,28 @@
 ---
+
+- name: check if 5432 is open
+  tasks:
+    - wait_for: host=remote.host port=8080 timeout=1
+    - debug: msg=ok
+
+
+- name: restart firewall
+  service:
+    name: firewalld
+    state: restarted
+
+
 - name: Adding db to 1st node
   script: bucardo_add_db.sh "{{ ip_node1 }}" "{{ ip_node2 }}" "{{ sync_database }}" "{{ db_user }}" "{{ db_password }}"
-  when: ansible_hostname == ansible_play_hosts[0]
+  when: ansible_host == ip_node1
 
 - name: Adding db to 2nd node
   script: bucardo_add_db.sh "{{ ip_node2 }}" "{{ ip_node1 }}" "{{ sync_database }}" "{{ db_user }}" "{{ db_password }}"
-  when: ansible_hostname == ansible_play_hosts[1]
+  when: ansible_hostname != ip_node1
 
 - name: Adding sync to 1nd node
   script: bucardo_sync.sh "{{ ip_node1 }}" "{{ ip_node2 }}" "{{ sync_database }}" "{{ db_user }}" "{{ db_password }}"
-  when: ansible_hostname == ansible_play_hosts[0]
+  when: ansible_hostname == ip_node1
 
 - name: bucardo restart
   shell: "/usr/local/bin/bucardo restart"
