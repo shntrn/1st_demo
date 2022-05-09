@@ -12,11 +12,11 @@
 
 - name: Adding db to 2nd node
   script: bucardo_add_db.sh "{{ ip_node2 }}" "{{ ip_node1 }}" "{{ sync_database }}" "{{ db_user }}" "{{ db_password }}"
-  when: ansible_hostname != ip_node1
+  when: ansible_host != ip_node1
 
 - name: Adding sync to 1nd node
   script: bucardo_sync.sh "{{ ip_node1 }}" "{{ ip_node2 }}" "{{ sync_database }}" "{{ db_user }}" "{{ db_password }}"
-  when: ansible_hostname == ip_node1
+  when: ansible_host == ip_node1
 
 - name: bucardo restart
   shell: "/usr/local/bin/bucardo restart"

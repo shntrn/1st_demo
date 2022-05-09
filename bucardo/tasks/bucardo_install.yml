@@ -112,22 +112,31 @@
     name: postgresql
     state: restarted
 
-#Install Bucardo
+#Check if bucardo already downloaded
+- name: Check if bucardo already downloaded
+  stat:
+    path: /tmp/bucardo/bucardo.tar.gz
+  register: bucardo_exist
+
 - name: Download Bucardo package
   get_url:
     url: "{{ bucardo_download_link }}"
     dest: /tmp/bucardo
+  when: not bucardo_exist.stat.exists
 
 - name: rename archive
   shell: "mv /tmp/bucardo/* /tmp/bucardo/bucardo.tar.gz"
+  when: not bucardo_exist.stat.exists
 
 - name: Unarchive Bucardo package
   shell: "tar xvf /tmp/bucardo/bucardo.tar.gz -C /tmp/bucardo --strip-components=1"
+  when: not bucardo_exist.stat.exists
 
 - name: Install Bucardo 1) Makefile.PL
   shell: "perl Makefile.PL"
   args:
     chdir: /tmp/bucardo/
+
 
 - name: Install Bucardo 2) make
   shell: "make"
@@ -142,24 +151,14 @@
 - name: Install Bucardo 4) export bucardo path
   shell: "export PATH=$PATH:/usr/local/bin"
 
+
+#Generate .pgspass file (credentials)
 - name: Install Bucardo 5) Copy credential file
-  copy:
-    src: "{{ destination_pgpass }}"
+  template:
+    src: .pgpass
     dest: "{{ home_pgpass_dest }}"
     mode: 0600
 
-#Export credentials
-- name: replace host
-  replace: path={{ home_pgpass_dest}}/.pgpass regexp=host replace={{ ansible_host }}
-
-- name: replace dbuser
-  replace: path={{ home_pgpass_dest }}/.pgpass regexp=user replace={{ db_user }}
-
-- name: replace database
-  replace: path={{ home_pgpass_dest }}/.pgpass regexp=database replace={{ db_name }}
-
-- name: replace dbpassword
-  replace: path={{ home_pgpass_dest }}/.pgpass regexp=password replace={{ db_password }}
 
 - name: Install Bucardo 6) Install bucardo
   expect:

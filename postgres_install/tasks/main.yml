@@ -21,11 +21,15 @@
   shell: "postgresql-setup initdb"
   when: not postgres_data.stat.exists
 
-- name: Start and enabled postgres
+- name: Enabled postgres
+  service:
+    name: postgresql
+    enabled: yes
+
+- name: Start postgres
   service:
     name: postgresql
     state: started
-    enabled:
 
 - name: Add listen address - local & ansible host IP
   lineinfile:
@@ -35,11 +39,11 @@
   notify: restart postgres
 
 #Open port in firewalld
-- name: enable firewall
+- name: Enable firewall
   service:
     name: firewalld
-    state: started
-    enabled:
+    enabled: yes
+
 
 - name: Permit traffic to Postgre
   firewalld:

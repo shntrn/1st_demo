@@ -1,0 +1,68 @@
+---
+# tasks file for sql_balancer
+
+#Installing haproxy package
+- name: Install postgres packages
+  yum:
+    pkg: "{{ item }}"
+    state: latest
+  loop:
+    - haproxy
+
+- name: Enable haproxy
+  systemd:
+    name: "haproxy"
+    enabled: yes
+
+#Loading haproxy configuration
+- name: Copy haproxy configuration
+  template:
+    src: haproxy.cfg
+    dest: /etc/haproxy/
+    mode: 0644
+
+- name: Permit haproxy bind the address
+  command: setsebool -P haproxy_connect_any=1
+
+#Adding sql nodes to config files
+- name: adding sql nodes
+  lineinfile:
+    path: /etc/haproxy/haproxy.cfg
+    regexp: 'SQL_NODE'
+    line: server {{ item }} {{ hostvars[ item ]['ansible_host'] }}:5432 check
+  loop: "{{ groups['sql_servers'] }}"
+  notify: restart haproxy
+
+#Permit postgre traffic to balancer
+- name: Permit traffic to Postgre
+  firewalld:
+    port: 5432/tcp
+    permanent: yes
+    state: enabled
+  notify: restart firewalld
+
+#Se linux configuration
+- name: Permit haproxy bind the address
+  command: setsebool -P haproxy_connect_any=1
+
+#Allow traffic from SQL balancer for SQL nodes
+- name: Allow traffic from balancer for sql nodes
+  postgresql_pg_hba:
+    dest: "/var/lib/pgsql/data/pg_hba.conf"
+    contype: host
+    address: "{{ hostvars[ 'sql-balancer' ]['ansible_host'] }}"
+    databases: "{{ sync_database }}"
+    method: md5
+    users: "{{ sync_db_user }}"
+    create: true
+  become_user: postgres
+  delegate_to: "{{ item }}"
+  with_items: "{{ groups['sql_servers'] }}"
+
+- name: restart postgres on SQL nodes
+  service:
+    name: postgresql
+    state: restarted
+  delegate_to: "{{ item }}"
+  with_items: "{{ groups['sql_servers'] }}"
+

@@ -6,7 +6,6 @@ db_name: bucardo
 db_user: bucardo
 db_password: bucardopassword
 bucardo_download_link: https://bucardo.org/downloads/Bucardo-5.6.0.tar.gz
-destination_pgpass: .pgpass
 home_pgpass_dest: /root/
 sync_database: gogsdb
 

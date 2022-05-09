@@ -1,0 +1,18 @@
+---
+# handlers file for sql_balancer
+- name: restart haproxy
+  systemd:
+    name: "haproxy"
+    state: restarted
+
+- name: restart firewalld
+  service:
+    name: firewalld
+    state: restarted
+
+- name: restart postgres on SQL nodes
+  service:
+    name: postgresql
+    state: restarted
+  delegate_to: "{{ item }}"
+  with_items: "{{ groups['sql_servers'] }}"

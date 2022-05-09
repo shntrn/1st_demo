@@ -1,0 +1,12 @@
+---
+# vars file for sql_balancer
+maxconn: 100
+retries: 2
+timeout_client: 5m
+timeout_server: 5m
+timeout_connect: 5s
+timeout_check: 5s
+balance_mode: leastconn
+
+sync_database: gogsdb
+sync_db_user: gogsuser

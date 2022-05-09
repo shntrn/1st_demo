@@ -4,6 +4,7 @@
   become: yes
 
   roles:
-    - postgres_install
-    - init_app_db
-    - bucardo
+    - { role: postgres_install, when: "'sql_servers' in group_names" }
+    - { role: init_app_db,when: "'sql_servers' in group_names" }
+    - { role: bucardo, when: "'sql_servers' in group_names" }
+    - { role: sql_balancer, when: "'sql_balancers' in group_names" }
