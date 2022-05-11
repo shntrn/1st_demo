@@ -1,12 +1,10 @@
 [sql_servers]
-sql-node1 ansible_host=192.168.56.111 ansible_user=vagrant ansible_private_key_file=/home/shntrn/1st_demo/.vagrant/machines/sql-node1/virtualbox/private_key
-sql-node2 ansible_host=192.168.56.112 ansible_user=vagrant ansible_private_key_file=/home/shntrn/1st_demo/.vagrant/machines/sql-node2/virtualbox/private_key
+sql-node1 ansible_host=192.168.56.111 ansible_user=vagrant ansible_private_key_file=
+sql-node2 ansible_host=192.168.56.112 ansible_user=vagrant ansible_private_key_file=
 
 [sql_balancers]
-sql-balancer ansible_host=192.168.56.113 ansible_user=vagrant ansible_private_key_file=/home/shntrn/1st_demo/.vagrant/machines/sql-balancer/virtualbox/private_key
+sql-balancer ansible_host=192.168.56.113 ansible_user=vagrant ansible_private_key_file=
 
-#[application nodes]
-#app_node1
-#app_node2
+
 
 
